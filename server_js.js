@@ -54,7 +54,6 @@ wsServer.on('request', function(request) {
   var index = clients.push(connection) - 1;
   var userName = false;
   var userColor = false;
-  console.log((new Date()) + ' Connection accepted.');
 
   // user sent some message
   connection.on('message', function(message) {
@@ -65,7 +64,7 @@ wsServer.on('request', function(request) {
      if (msg.Name === "car") {
       userName = msg.Name;
       userColor = colors.shift();
-        console.log((new Date()) + ' User is known as: ' + userName
+        console.log(' User is known as: ' + userName
                     + ' with ' + msg.F + ' x position');
 
         clients[index].sendUTF(position[0]); 

@@ -27,12 +27,14 @@
   <div id="wrap">
   <div id="blocklyDiv" style="height: 40px; width: 70px; color: orange;"></div>
     <canvas id="myCanvas" width="1000" height="400"  ></canvas>
-    
-    <script  src="file:///Users/sarahcheng/Documents/Master/GRA/Simulator/car.js"></script>
     <script type="text/javascript">
     var ctx = document.getElementById("myCanvas").getContext('2d');
-      ctx.fillRect(10, 10, 10, 30);
+      
+      ctx.fillStyle = "red";
+      ctx.fillRect(600, 0, 10, 300);      
+      ctx.fillStyle = "orange";
     </script>
+    <script  src="file:///Users/sarahcheng/Documents/Master/GRA/Simulator/car.js"></script>
     
       <!--   <script type="text/javascript">
     // var c = document.getElementById("myCanvas"); 
