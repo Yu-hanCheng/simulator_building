@@ -4,7 +4,7 @@
 }
 
 var xpos = 200;
-var ypos = -50;
+var ypos = 200;
 var count = 0;
 var x_dir = 1;
 var break_flag =0;
@@ -38,36 +38,43 @@ function get_pos(){
 	var ctx = document.getElementById("myCanvas").getContext('2d');
   ctx.save();
   
-  ctx.clearRect(xpos-50, ypos, 160, 300);
+  ctx.clearRect(xpos-50, ypos, 160, 100);
   // // Hour marks
   ctx.save();
-  	ctx.fillRect(xpos, ypos, 100, 100);
+  	ctx.fillRect(xpos, ypos, 100, 40);
   ctx.restore();//回到有clear的狀態
   if(x_dir == 1){xpos += 5;}
   else{xpos -= 5;}  
   var i =10;
-  var imgData = ctx.getImageData(xpos+150+(i*10), 0, 1, 20);
+  var imgData = ctx.getImageData(xpos+100+(i*10), ypos-10, 1, 20);
   for(i=9;i>2;i--){ //an obstacle at least 10 pixel width
     for(j=0;j<imgData.data.length;j+=40){ //just check the red value magic num 450?
 	  	if(imgData.data[j]==255){
         break_flag =i;
         break;
       }
-      if (break_flag!=0) {break;}
     }
-	  imgData = ctx.getImageData(xpos+150+(i*10), 0, 1, 20);
+	  imgData = ctx.getImageData(xpos+100+(i*10), ypos-10, 1, 20);
     // alert(xpos+250+(i*10));
   }
   if (break_flag!=0) {
-    alert(xpos+150+(break_flag*10));
-
-    ctx.clearRect(xpos-50, ypos, 160, 300);
+      var connection = new WebSocket('ws://192.168.1.179:1337');
+      connection.onopen = function () {
+        var obj = { Name:'obtc',x_value:xpos+150+(break_flag*10)}
+        var json = JSON.stringify(obj);
+        console.log(json);
+        connection.send(json);
+      };
+  }//pos of obstacle, send to server
+  if(0<break_flag && break_flag<4){
+    ctx.clearRect(xpos-50, ypos, 160, 100);
   // // Hour marks
   ctx.save();
   xpos-=150;
-    ctx.fillRect(xpos, ypos, 100, 100);
+    ctx.fillRect(xpos, ypos, 100, 40);
   ctx.restore();//回到有clear的狀態
-  }//pos of obstacle, send to server
+  break_flag=0;
+  }
   // var json = JSON.stringify(imgData);
   // console.log(json);
 }
