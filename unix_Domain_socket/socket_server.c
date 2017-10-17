@@ -39,11 +39,11 @@ int main(int argc,char** argv){
 	switch(msg->type){
 		case 0:
 
-			strcpy(st_msg->msg,"send hello"); //why Segmentation fault: 11
+			// strcpy(st_msg->msg,"send hello"); //why Segmentation fault: 11
 			msg->len = sizeof(st_msg->msg);
 			printf("len %d\n", msg->len);
-			memcpy(msg->data,&st_msg,msg->len);
-			// memcpy(msg->data,"send hello",msg->len);
+			// memcpy(msg->data,&st_msg,msg->len);
+			memcpy(msg->data,"send hello",msg->len);
 			printf("end %s\n", msg->data);
 
 
