@@ -17,14 +17,18 @@ function update(){
     connection.send(json);
   };
   connection.onmessage = function (evt){
-	var pos_msg = evt.data;
+    var msgfromserver = evt.data;
+    var parse_msg =JSON.parse(msgfromserver)
 
-	console.log(pos_msg);
+	console.log(parse_msg.msg);
 	console.log(" compare: ");
 	console.log(xpos);
   console.log(ypos);
-	if(pos_msg>xpos){x_dir = 1;}
+  if (msgfromserver.Name==='des') {
+	if(msgfromserver.msg>xpos){x_dir = 1;}
 	else{x_dir = 0;}
+  }else if (msgfromserver.Name==='exec') {}
+  ctx.rotate(20 * Math.PI / 180);
   }
   connection.onclose = function(){
   	console.log("car connection close");
@@ -60,7 +64,7 @@ function get_pos(){
   if (break_flag!=0) {
       var connection = new WebSocket('ws://192.168.1.179:1337');
       connection.onopen = function () {
-        var obj = { Name:'obtc',x_value:xpos+150+(break_flag*10)}
+        var obj = { Name:'obtc',x_value:xpos+100+(break_flag*10)}
         var json = JSON.stringify(obj);
         console.log(json);
         connection.send(json);

@@ -6,6 +6,20 @@ var webSocketsServerPort = 1337;
 // websocket and http servers
 var webSocketServer = require('websocket').server;
 var http = require('http');
+// var unixSocket = require("unix-socket");
+// var tryList = [ "tmp/server.sock" ];
+// var path = unixSocket.availableStream(tryList);
+// //or 
+// unixSocket.availableStream(tryList, function(path) {
+ 
+// });
+
+var net = require('net');
+var path = '/tmp/server_child.sock';
+var u_client = new net.Socket();
+u_client.connect(path);
+
+
 /**
  * Global variables
  */
@@ -59,18 +73,33 @@ wsServer.on('request', function(request) {
   connection.on('message', function(message) {
     if (message.type === 'utf8') { // accept only text
     // first message sent by user is their name
-    var msg = JSON.parse(message.utf8Data);
-    console.log(msg);
-     if (msg.Name === "car") {
-      userName = msg.Name;
-      userColor = colors.shift();
-        console.log(' User is known as: ' + userName
-                    + ' with ' + msg.F + ' x position');
+      var msg = JSON.parse(message.utf8Data);
+      console.log(msg);
+      if (msg.Name === "car") {
+        userName = msg.Name;
+        userColor = colors.shift();
+          console.log(' User is known as: ' + userName
+                      + ' with ' + msg.F + ' x position');
+          var backtocar = {Name:'des',msg:position[0]}
+          var msg_tocar = JSON.stringify(backtocar);
+          clients[index].sendUTF(msg_tocar); 
+        
+        // var u_sen = {Name:'sensor_value',msg_to_u:msg.x_value}
+        // var u_json = JSON.stringify(u_sen);
+        // u_client.write(u_json);
 
-        clients[index].sendUTF(position[0]); 
       } else if(msg.Name === "set"){ // log and broadcast the message
-        position[0]=msg.x_value;
-        clients[index].sendUTF("done");      }
+          position[0]=msg.br_msg;    
+      }else if (msg.Name === "code") {
+        var u_code = {Name:'code',msg_to_u:msg.br_msg};
+        var u_code_json = JSON.stringify(u_code);
+        u_client.write(u_code_json);//send to child
+      }else if(msg.Name === "obtc"){
+        //unix socket
+        var u_obj = {Name:'u_obtc',msg_to_u:msg.x_value}
+    var u_json = JSON.stringify(u_obj);
+        // u_client.write(u_json);
+      }
     }
   });
   // user disconnected
