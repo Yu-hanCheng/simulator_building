@@ -60,8 +60,8 @@ var wsServer = new webSocketServer({
 // This callback function is called every time someone
 // tries to connect to the WebSocket server
 wsServer.on('request', function(request) {
-  console.log((new Date()) + ' Connection from origin '
-      + request.origin + '.');
+  // console.log((new Date()) + ' Connection from origin '
+      // + request.origin + '.');
 
   var connection = request.accept(null, request.origin); 
   // we need to know client index to remove them on 'close' event
@@ -94,19 +94,38 @@ wsServer.on('request', function(request) {
         var u_code = {Name:'code',msg_to_u:msg.br_msg};
         var u_code_json = JSON.stringify(u_code);
         u_client.write(u_code_json);//send to child
+        var fs = require('fs');
+        var the_code = JSON.stringify(msg.br_msg);
+        fs.writeFile("newcode.c", msg.br_msg, function(err) {
+          if(err) { return console.log(err); }
+      });
+      const { spawn } = require('child_process');
+      const comp = spawn('gcc', ['newcode.c', '-o','newcode']);
+
+      comp.on('close', (code) => {
+      console.log(`child process exited with code ${code}`);
+      const exec = spawn('./newcode');
+
+      exec.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+      });
+      });
+      fs.writeFile("flag.txt", "1", function(err) {
+          if(err) { return console.log(err); }
+      });  
       }else if(msg.Name === "obtc"){
         //unix socket
-        var u_obj = {Name:'u_obtc',msg_to_u:msg.x_value}
-    var u_json = JSON.stringify(u_obj);
-        // u_client.write(u_json);
+        // var u_obj = {Name:'u_obtc',msg_to_u:msg.x_value}
+        // var u_json = JSON.stringify(u_obj);
+        
       }
     }
   });
   // user disconnected
   connection.on('close', function(connection) {
     if (userName !== false && userColor !== false) {
-      console.log((new Date()) + " Peer "
-          + connection.remoteAddress + " disconnected.");
+      // console.log((new Date()) + " Peer "
+      //     + connection.remoteAddress + " disconnected.");
       clients.splice(index, 1);
       colors.push(userColor);
     }

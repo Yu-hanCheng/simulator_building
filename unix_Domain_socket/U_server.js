@@ -16,9 +16,9 @@ fs.unlink(path, function () {
     c.on('data', (chunk) => { console.log(chunk.toString());
       var par = JSON.parse(chunk);
       if(par.Name==='code'){
-        sysfork(par.msg_to_u);
+        // sysfork(par.msg_to_u);
       }else if(par.Name==='u_obtc'){
-        algo(par.msg_to_u);
+        // algo(par.msg_to_u);
       }
      });
     c.write('I\'m server \r\n');
