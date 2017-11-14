@@ -111,30 +111,11 @@ var fs = require('fs');
         fs.writeFile("newcode.c", msg.br_msg, function(err) {
           if(err) { return console.log("write file error"); }
       });
-        var runnnn=0;
-      const { spawn } = require('child_process');
-      const child = spawn('pkill', ['-f','newcode']);
-      child.on('close', (code) => {
-      console.log(`kkkkkkilllll`);
-      });
-      var a=0;
-while(a<1000000){
-  a++;
-}
-      const comp = spawn('gcc', ['newcode.c', '-o','newcode']);
-      comp.on('close', (code) => {
-      console.log(`child process exited with code ${code}`);
-      });
-      a=0;
-while(a<10000000){
-  a++;
-}
-      const exec = spawn('./newcode');
-      exec.stdout.on('data', (data) => {
-        console.log(`stdout: ${data}`);
-      runnnn=1;
-      });
-      
+      const child = require('child_process').exec;
+    var cmdString = 'pkill -f newcode; gcc newcode.c -o newcode; ./newcode';
+    child(cmdString, (err, stdout, stderr) => {
+      console.log(stdout);
+    });
 
       }else if(msg.Name === "obtc"){
         //unix socket
