@@ -1,6 +1,6 @@
 "use strict";
 // Optional. You will see this name in eg. 'ps' or 'top' command
-process.title = 'auto_car';
+process.title = 'server_js';
 // Port where we'll run the websocket server
 var webSocketsServerPort = 1337;
 // websocket and http servers
@@ -68,7 +68,7 @@ wsServer.on('request', function(request) {
   var index = clients.push(connection) - 1;
   var userName = false;
   var userColor = false;
-
+var fs = require('fs');
   // user sent some message
   connection.on('message', function(message) {
     if (message.type === 'utf8') { // accept only text
@@ -80,9 +80,21 @@ wsServer.on('request', function(request) {
         userColor = colors.shift();
           console.log(' User is known as: ' + userName
                       + ' with ' + msg.F + ' x position');
+          fs.readFile('motor.txt', 'utf8', function (err,data) {
+            if (err) {
+              return console.log(err);
+            }
+
+          var motor = {Name:'motor',msg:data}
+          var msg_tocar = JSON.stringify(motor);
+          clients[index].sendUTF(msg_tocar);
+          console.log("in server readmotor");
+            console.log(msg_tocar); 
+          });
+          fs.writeFile("motor.txt", "x", function(err) {
+          if(err) { return console.log(err); }
+      });
           var backtocar = {Name:'des',msg:position[0]}
-          var msg_tocar = JSON.stringify(backtocar);
-          clients[index].sendUTF(msg_tocar); 
         
         // var u_sen = {Name:'sensor_value',msg_to_u:msg.x_value}
         // var u_json = JSON.stringify(u_sen);
@@ -94,41 +106,64 @@ wsServer.on('request', function(request) {
         var u_code = {Name:'code',msg_to_u:msg.br_msg};
         var u_code_json = JSON.stringify(u_code);
         u_client.write(u_code_json);//send to child
-        var fs = require('fs');
+        // var fs = require('fs');
         var the_code = JSON.stringify(msg.br_msg);
         fs.writeFile("newcode.c", msg.br_msg, function(err) {
-          if(err) { return console.log(err); }
+          if(err) { return console.log("write file error"); }
       });
+        var runnnn=0;
       const { spawn } = require('child_process');
+      const child = spawn('pkill', ['-f','newcode']);
+      child.on('close', (code) => {
+      console.log(`kkkkkkilllll`);
+      });
+      var a=0;
+while(a<1000000){
+  a++;
+}
       const comp = spawn('gcc', ['newcode.c', '-o','newcode']);
-
       comp.on('close', (code) => {
       console.log(`child process exited with code ${code}`);
+      });
+      a=0;
+while(a<10000000){
+  a++;
+}
       const exec = spawn('./newcode');
-
       exec.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);
+      runnnn=1;
       });
-      });
-      fs.writeFile("flag.txt", "1", function(err) {
-          if(err) { return console.log(err); }
-      });  
+      
+
       }else if(msg.Name === "obtc"){
         //unix socket
+        var ultra_value_json = {df:msg.distance,dr:'100',dl:'20'}
+        var ultra_value = JSON.stringify(ultra_value_json);
+      fs.writeFile("ultra_value.txt", ultra_value, function(err) {
+          if(err) { return console.log(err); }
+      }); 
+      fs.writeFile("motor.txt", "right", function(err) {
+          if(err) { return console.log(err); }
+      });
+      // fs.writeFile("ultra_value.txt", ultra_value, function(err) {
+      //     if(err) { return console.log(err); }
+      // });  
         // var u_obj = {Name:'u_obtc',msg_to_u:msg.x_value}
         // var u_json = JSON.stringify(u_obj);
         
       }
-    }
+    }//if (message.type === 'utf8')
   });
   // user disconnected
   connection.on('close', function(connection) {
-    if (userName !== false && userColor !== false) {
-      // console.log((new Date()) + " Peer "
-      //     + connection.remoteAddress + " disconnected.");
-      clients.splice(index, 1);
-      colors.push(userColor);
-    }
+    // if (userName !== false && userColor !== false) {
+    //   // console.log((new Date()) + " Peer "
+    //   //     + connection.remoteAddress + " disconnected.");
+    //   clients.splice(index, 1);
+    //   colors.push(userColor);
+    // }
+    return console.log(connection);
   });
 });
 
