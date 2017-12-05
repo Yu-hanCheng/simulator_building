@@ -8,24 +8,27 @@ var net = require('net');
 var fs = require('fs');
 var path = '/tmp/server_child.sock';
 fs.unlink(path, function () {
-  var server = net.createServer(function(c) {
-    console.log('server connected');
+  var u_server= net.createServer(function(c) {
+    console.log('u_serverconnected');
     c.on('end', function() {
-      console.log('server disconnected');
+      console.log('u_serverdisconnected');
     });
-    c.on('data', (chunk) => { console.log(chunk.toString());
+    c.on('data', (chunk) => { 
+      // console.log(chunk);
+      console.log(chunk.toString());
       var par = JSON.parse(chunk);
       if(par.Name==='code'){
+        console.log(par.msg_to_u);
         // sysfork(par.msg_to_u);
       }else if(par.Name==='u_obtc'){
         // algo(par.msg_to_u);
       }
      });
-    c.write('I\'m server \r\n');
+    c.write('I\'m u_server\r\n');
     c.pipe(c);
   });
-  server.listen(path, function() {
-    console.log('server bound on %s', path);
+  u_server.listen(path, function() {
+    console.log('u_serverbound on %s', path);
   });
 });
 

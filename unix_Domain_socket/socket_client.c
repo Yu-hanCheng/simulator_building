@@ -3,23 +3,24 @@
 #include <sys/socket.h>
 #include <sys/syslog.h>
 #include <sys/un.h>
+#include "cjson/cJSON.h"
 #include "ipc.h"
 
 int main(int argc,char** argv){
 	int client_fd,len;
 	int i;
 	struct sockaddr_un addr;
-	struct ipc_msg *msg;
+	struct ipc_msg *msg,*msg_send;
 	char msgbuf[MAX_BUF_LEN];
 	struct test_send_struct *st_msg;
 	msg=(struct ipc_msg*) msgbuf;
 
-	if((client_fd = socket(PF_UNIX,SOCK_DGRAM,0))== -1){
+	if((client_fd = socket(PF_UNIX,SOCK_STREAM,0))== -1){
 		perror("socket");
 		goto fail;
 	}
 	memset(&addr,0,sizeof(addr));
-	addr.sun_family = AF_UNIX;
+	addr.sun_family = PF_UNIX;
 	strcpy(addr.sun_path,CLIENT_SOCK_FILE);
 	unlink(CLIENT_SOCK_FILE);
 	if(bind(client_fd,(struct sockaddr*)&addr,sizeof(addr))==-1)
@@ -29,14 +30,15 @@ int main(int argc,char** argv){
 	}
 
 	memset(&addr,0,sizeof(addr));
-	addr.sun_family = AF_UNIX;
+	addr.sun_family = PF_UNIX;
 	strcpy(addr.sun_path,SERVER_SOCK_FILE);
 	if(connect(client_fd,(struct sockaddr*)&addr,sizeof(addr))==-1){
-		perror("connect");
+		perror("55555");
 		goto fail;
 	}else{printf("connected\n");}
-	msg->type = 0;
-	if(send(client_fd,msg,sizeof(msg),0)==-1){
+	msg->type = 1;
+msg->sd_msg="www";
+	if(send(client_fd,msg->sd_msg,sizeof(msg),0)==-1){
 		perror("send");
 		goto fail;
 	}
@@ -44,11 +46,16 @@ int main(int argc,char** argv){
 		perror("recv");
 		goto fail;
 	}
-	printf("recv %s\n",msg->data);
+	printf("success recv %s\n",msg->data);
 	if (msg->len >= MAX_MSG_LEN)
 	{
 		st_msg = (struct test_send_struct*)msg -> data;
 		printf("st_msg is %s\n", st_msg->msg);
+		// msg->data[0] = 'A';
+		// memcpy(st_msg,msg->data,msg->len);
+
+		st_msg ="Abccc";
+		send(client_fd,st_msg,sizeof(st_msg),0);
 	}
 	fail:
 		if(client_fd>=0){
