@@ -1,70 +1,58 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include <signal.h>
+#include <stdio.h>
+#include <stddef.h>
 #include <sys/socket.h>
-#include <sys/syslog.h>
 #include <sys/un.h>
-#include "ipc.h"
-
-void sighandler(int sig) 
-{ 
-    while(1) 
-        ; 
-}
-int main(int argc,char** argv){
-	int servfd;
-	int ret;
-	struct sockaddr_un addr;
-	struct ipc_msg *msg;
-	char msgbuf[MAX_BUF_LEN];
-	struct test_send_struct *st_msg;
-	struct sockaddr_un from;
+#define QLEN 10
+int main(void)
+{
+	int    fd,clifd,size,len, err, rval,rc,come_in;
+	struct sockaddr_un un,from;
+int ret;
+	char buff[8192];
 	socklen_t fromlen = sizeof(from);
-
-	msg=(struct ipc_msg*) msgbuf;
-	servfd = socket(PF_UNIX,SOCK_DGRAM,0);
-	memset(&addr,0,sizeof(addr));
-	addr.sun_family=AF_UNIX;
-	strcpy(addr.sun_path,SERVER_SOCK_FILE);
-	unlink(SERVER_SOCK_FILE);
-
-	if(bind(servfd,(struct sockaddr*)&addr,sizeof(addr))==-1)
-	{
-		perror("bind");
-		goto fail;
+	memset(&un, 0, sizeof(un));
+	un.sun_family = AF_UNIX;
+	strcpy(un.sun_path, "/tmp/server_child.sock");
+	if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
+		perror("socket error");
+		exit(1);
 	}
-	ret = recvfrom(servfd,msg,MAX_BUF_LEN,0,(struct sockaddr*)&from,&fromlen);
-	signal(SIGSEGV, sighandler); 
-	// printf("from \n");
-	switch(msg->type){
-		case 0:
-
-			// strcpy(st_msg->msg,"send hello"); //why Segmentation fault: 11
-			msg->len = sizeof(st_msg->msg);
-			printf("len %d\n", msg->len);
-			// memcpy(msg->data,&st_msg,msg->len);
-			memcpy(msg->data,"send hello",msg->len);
-			printf("end %s\n", msg->data);
-
-
-
-
-			ret = sendto(servfd,msg,MAX_BUF_LEN,0,(struct sockaddr*)&from,fromlen);
-			printf("ret %d\n", ret);
-			if(ret <0){
-				perror("sendto(interfaces)");
-				return 0;
-			}
-			break;
-		default:
-		printf("unknown msg type\n");
-		break;
-
+	size = offsetof(struct sockaddr_un, sun_path) + strlen(un.sun_path);
+	printf("%d\n",size);
+	if (bind(fd, (struct sockaddr *)&un, size) < 0) {
+		perror("bind error");
+		exit(1);
 	}
-	return 0;
+	printf("UNIX domain socket bound\n");
+	if (listen(fd, QLEN) < 0) { /* tell kernel we're a server */
+		rval = -3;
+		goto errout;
+	}
+	len = sizeof(un);
+	if ((clifd = accept(fd, (struct sockaddr *)&un, &len)) < 0){
+		return(-1);     /* often errno=EINTR, if signal caught */
+	}else{
+		printf("%d\n",clifd);
+		come_in=1;
+		printf("UNIX domain socket accepted\n");
+		while (come_in){ 
+			if((rc=read(clifd,buff,sizeof(buff))) > 0) {
+      		printf("read %u bytes: %.*s\n", rc, rc, buff);
+    		}else{come_in=0;}
+	}
+	if (rc == -1) {
+      perror("read error");
+      exit(-1);
+    }
+    else if (rc == 0) {
+      printf("EOF\n");
+      close(clifd);
+    }
+  }
+errout:
+	return(rval);
+	
+	
 
-
-	fail:
-		close(servfd);
-		return 1;
 }
