@@ -8,37 +8,27 @@
 // }
 // loadjscssfile(req_url);
 // loadScript("file:///Users/sarahcheng/Documents/Master/GRA/Simulator/require.js");
-var fs = require('fs');
+// import {require} from 'require.js';//('require.js');
+// var fs = require('fs');
 function websocket_client(type) {
   "use strict";
   window.WebSocket = window.WebSocket || window.MozWebSocket;
  
-  var connection = new WebSocket('ws://192.168.1.179:1337');
-  // var connection = new WebSocket('ws://192.168.0.115:1337');
-
+  // var connection = new WebSocket('ws://192.168.1.179:1337');
+  var connection = new WebSocket('ws://192.168.0.101:1337');
+  // var connection = new WebSocket('ws://192.168.43.180:1337');
+  // var connection = new WebSocket('ws://192.168.208.101:1337');
   connection.onopen = function () {
     if (type==0) {
       var x_value = document.getElementById("input").value;
       var obj = { Name:'set',br_msg:x_value}
     }else if (type==1) {
       var input_code = document.getElementById("input_code").value;
-      var obj = { Name:'code',br_msg:input_code}
-      console.log(obj.br_msg);
-      fs.writeFile("socket_client.c", "Hey there!", function(err) {
-          if(err) { return console.log(err); }
-          console.log("The file was saved!");
-      }); 
-      const { spawn } = require('child_process');
-      const comp = spawn('gcc', ['socket_clientt.c', '-o','client']);
+      console.log("Now recv: " + Date.now());
+      var obj = { Name:'code',msg:input_code}
+      // console.log(obj.br_msg);
 
-      comp.on('close', (code) => {
-      console.log(`child process exited with code ${code}`);
-      const exec = spawn('./client');
-
-      exec.stdout.on('data', (data) => {
-        console.log(`stdout: ${data}`);
-      });
-      });
+ 
     }
     var json = JSON.stringify(obj);
     console.log(json);
@@ -57,9 +47,9 @@ function websocket_client(type) {
 
     try {
       // var json = JSON.parse(message.data);
-      console.log('msg: ', message.data);//set done
+      // console.log('msg: ', message.data);//set done
     } catch (e) {
-      console.log('Invalid JSON: ', message);
+      // console.log('Invalid JSON: ', message);
       return;
     }
   }
