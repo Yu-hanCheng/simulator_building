@@ -43,6 +43,7 @@ module.exports={
 	        }
 	      }
 	  }
-	}
-	return motor
+	
+	return motor;
+}
 }

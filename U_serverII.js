@@ -6,6 +6,10 @@ var webSocketsServerPort = 1337;
 var webSocketServer = require('websocket').server;
 var http = require('http');
 var clients=[0,0,0,0,0];
+var motor_c// from_child
+={Name:'motor_c',msg:{pin:[0,0,0,0],period:0}}// L_F, L_B,R_F, R_B, time
+var motor
+={Name:'motor_dir',msg:{direct:'right',angle:90}}
 // main
 function init(){
   setInterval(IPC,300);
@@ -14,10 +18,19 @@ function init(){
 
 // *********** IPC with newcode ***************
 function IPC(){
+const MTOA = require('./Motor_to_Angle');
+
 var u_client = new net.Socket();
 u_client.connect(path);
 u_client.on('data', (chunk) => { 
-  console.log(chunk.toString()); 
+  console.log("recved from IPCServer "+chunk); 
+  console.log("recved from IPCServer"+chunk.toString()); 
+  motor_c.msg.pin=chunk.toString();//pin_val[]
+  motor=MTOA.Motor_to_Angle(motor_c);
+// direct=L_F, L_B,R_F, R_B,Forward,Backward,stop
+// {Name:'motor_dir',msg:{direct:'right',angle:90}}
+// to_browser
+
 });
 u_client.on('error', function(err) {
   console.log("Error: " + err);
@@ -32,15 +45,7 @@ u_client.on('error', function(err) {
 }
 
 //********** global var ************
-const MTOA = require('./Motor_to_Angle');
 
-// from_child
-var motor_c
-={Name:'motor_c',msg:[0,0,0,0],period:0}// L_F, L_B,R_F, R_B, time
-
-var motor=MTOA.Motor_to_Angle(motor_c);
-// direct=L_F, L_B,R_F, R_B,Forward,Backward,stop
-// to_browser
 
 //from_browser
 var code
@@ -54,7 +59,7 @@ var des
 var  ultra_value
 ={Name:'ultra_value',msg:[1,1,1]}
 
-}
+
 
 // *********** websocket with browser ************
 

@@ -36,13 +36,15 @@ function drawObj(ctx) {
     ctx.fillStyle = "orange";
 
 }
-function turn(_ang) {
+function turn(_dir,_ang) {
 
   ctx.clearRect(xpos-50, ypos-20, 130, 90);
   ctx.translate(xpos+50,ypos+20);
+  if(_dir=="L_F"){
   for (var i =0; _ang > i;i+=2) {
     ctx.rotate(2);
-    
+    }
+    ctx.rotate(2);
   }
   
   console.log("right: "+_ang);
@@ -72,7 +74,7 @@ function drawCar(ctx) {
        // alert(i+" "+xpos+","+ypos+" "+j+" "+imgData.data);
         ultra_value.msg[0] =i;
         console.log("obstacle: "+i);
-        turn(10);
+        turn("L_F",40);
         break;
       }
     }
@@ -117,11 +119,13 @@ function update(){
   };
   connection.onmessage = function (evt){
     var msgfromserver = evt.data;
-    connection.close();
+    
     var parse_msg =JSON.parse(msgfromserver)
    if (parse_msg.Name==='motor_dir') {
+       console.log("dir: "+parse_msg.msg.direct+"\n angle :"+parse_msg.msg.angle);
       turn(parse_msg.msg.direct,parse_msg.msg.angle);
       }
+  connection.close();
   }
 }
 
