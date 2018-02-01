@@ -12,8 +12,11 @@ var motor
 ={Name:'motor_dir',msg:{direct:'right',angle:90}}
 // main
 function init(){
-  setInterval(IPC,500);
+  // setInterval(IPC,500);
   websocket();
+  IPC();
+  IPC();
+
 }
 
 // *********** IPC with newcode ***************

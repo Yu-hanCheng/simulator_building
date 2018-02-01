@@ -23,7 +23,7 @@ int IPCServer(void)
 
 		if (bind(fd, (struct sockaddr *)&un, size) < 0) {
 			perror("bind error");
-			// exit(1);
+			exit(1);
 		}else if (listen(fd, QLEN) < 0) { /* tell kernel we're a server */
 			printf("listen<0\n");
 			rval = -3;
@@ -49,7 +49,9 @@ int IPCServer(void)
 					pch = strtok(NULL,"}");
 					sscanf(pch,"\"msg\":[%d,%d,%d]}",ultra_val,ultra_val+1,ultra_val+2);
 					printf("ultra_value=[%d,%d,%d]\n",ultra_val[0],ultra_val[1],ultra_val[2]);
-	
+					
+					// usercode();
+
 		      		// printf("ultra_value=[%d,%d,%d]\n",ultra_val[0],ultra_val[1],ultra_val[3]);
 		      		// int motor_c[4]= {1,1,2,2};//{Name:'motor_c',msg:{pin:[0,0,0,0],period:0}}
 		      		int motor_c[4];
@@ -60,11 +62,12 @@ int IPCServer(void)
 		      		if (send(clifd, motor_c, sizeof(motor_c), 0) == -1) {
 						perror("sendback error");
 					}
+					
 		    	}else if (rc == 0) {
 			      printf("EOF\n");
-			      // goto errout;
+			      goto errout;
 	    		}//else{come_in=0;}
-	    		
+	    		close(clifd);
 
 		}
 		if (rc == -1) {
@@ -72,7 +75,7 @@ int IPCServer(void)
 	      exit(-1);
 		}
 	// }
-		close(clifd);
+		// close(clifd);
 errout:
 	close(clifd);
 	printf("errout\n");
