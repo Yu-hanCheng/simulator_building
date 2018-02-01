@@ -1,6 +1,7 @@
 #include "IPCServer.h"
+#include <string.h>
 #define QLEN 10
-int ultra_val[3];
+extern int ultra_val[3];
 int motor_c[4];
 int IPCServer(void)
 {
@@ -29,7 +30,7 @@ int IPCServer(void)
 			goto errout;
 		}
 		printf("UNIX domain socket bound\n");
-	while(1){
+	// while(1){
 		len = sizeof(un);
 		if ((clifd = accept(fd, (struct sockaddr *)&un, &len)) < 0){
 			printf("accept<0\n");
@@ -40,12 +41,23 @@ int IPCServer(void)
 			printf("UNIX domain socket accepted\n");
 			// while (come_in){ 
 				if((rc=read(clifd,buff,sizeof(buff))) > 0) {
-		      		printf("read %u bytes: %.*s\n", rc, rc, buff);
+		      		printf("read %u bytes: %.*s\n", rc,rc, buff);
+		      		// {"Name":"ultra_value","msg":[1,1,1]}
+		      		char *delim = ",";
+					char * pch;
+					pch = strtok(buff,delim);
+					pch = strtok(NULL,"}");
+					sscanf(pch,"\"msg\":[%d,%d,%d]}",ultra_val,ultra_val+1,ultra_val+2);
+					printf("ultra_value=[%d,%d,%d]\n",ultra_val[0],ultra_val[1],ultra_val[2]);
+	
+		      		// printf("ultra_value=[%d,%d,%d]\n",ultra_val[0],ultra_val[1],ultra_val[3]);
 		      		// int motor_c[4]= {1,1,2,2};//{Name:'motor_c',msg:{pin:[0,0,0,0],period:0}}
-		      		char *motor_c= {"1","1","2","2"};
-		      		// write(clifd, motor_c, rc);//what's the use for this line?
-		      		printf("%s\n",motor_c);
-		      		if (send(clifd, motor_c, strlen(motor_c)+1, 0) == -1) {
+		      		int motor_c[4];
+		      		sprintf(motor_c,"%d", 5);
+		      		sprintf(motor_c+1,"%d", 1);
+		      		sprintf(motor_c+2,"%d", 11);
+		      		sprintf(motor_c+3,"%d",12);
+		      		if (send(clifd, motor_c, sizeof(motor_c), 0) == -1) {
 						perror("sendback error");
 					}
 		    	}else if (rc == 0) {
@@ -59,7 +71,7 @@ int IPCServer(void)
 	      perror("read error");
 	      exit(-1);
 		}
-	}
+	// }
 		close(clifd);
 errout:
 	close(clifd);

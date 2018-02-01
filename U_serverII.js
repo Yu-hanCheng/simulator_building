@@ -12,7 +12,7 @@ var motor
 ={Name:'motor_dir',msg:{direct:'right',angle:90}}
 // main
 function init(){
-  setInterval(IPC,300);
+  setInterval(IPC,500);
   websocket();
 }
 
@@ -23,8 +23,8 @@ const MTOA = require('./Motor_to_Angle');
 var u_client = new net.Socket();
 u_client.connect(path);
 u_client.on('data', (chunk) => { 
-  console.log("recved from IPCServer "+chunk); 
-  console.log("recved from IPCServer"+chunk.toString()); 
+  console.log("recved from IPCServer"+chunk); 
+  // console.log("recved from IPCServer"+chunk.toString()); 
   motor_c.msg.pin=chunk.toString();//pin_val[]
   motor=MTOA.Motor_to_Angle(motor_c);
 // direct=L_F, L_B,R_F, R_B,Forward,Backward,stop
@@ -35,7 +35,7 @@ u_client.on('data', (chunk) => {
 u_client.on('error', function(err) {
   console.log("Error: " + err);
 });
-  var u_code_json = JSON.stringify(ultra_value);
+  var u_code_json = JSON.stringify(ultra_value);//"Name:ultra_value,msg:[1,1,1]
   u_client.write(u_code_json);
   u_client.end();
   u_client.on('end', function(err) {
