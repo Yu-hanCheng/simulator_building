@@ -12,12 +12,24 @@ var motor
 ={Name:'motor_dir',msg:{direct:'right',angle:90}}
 // main
 function init(){
-  // setInterval(IPC,500);
+  setInterval(IPC,500);
   websocket();
-  IPC();
-  IPC();
+
 
 }
+//********** global var ************
+
+
+//from_browser
+var code
+={Name:'code',msg:'txt'}
+var ultra_value
+={Name:'ultra_value',msg:[12,30,1]}//F,L,R
+var des
+={Name:'des',msg:[0,0]}//x,y
+
+// to_child
+
 
 // *********** IPC with newcode ***************
 function IPC(){
@@ -25,6 +37,8 @@ const MTOA = require('./Motor_to_Angle');
 
 var u_client = new net.Socket();
 u_client.connect(path);
+var u_code_json = JSON.stringify(ultra_value);//"Name:ultra_value,msg:[1,1,1]
+  u_client.write(u_code_json);
 u_client.on('data', (chunk) => { 
   console.log("recved from IPCServer"+chunk); 
   // console.log("recved from IPCServer"+chunk.toString()); 
@@ -38,30 +52,13 @@ u_client.on('data', (chunk) => {
 u_client.on('error', function(err) {
   console.log("Error: " + err);
 });
-  var u_code_json = JSON.stringify(ultra_value);//"Name:ultra_value,msg:[1,1,1]
-  u_client.write(u_code_json);
+  
   u_client.end();
   u_client.on('end', function(err) {
   console.log("Enddd: " + err);
 });
 
 }
-
-//********** global var ************
-
-
-//from_browser
-var code
-={Name:'code',msg:'txt'}
-var ultra_value
-={Name:'ultra_value',msg:[1,1,1]}//F,L,R
-var des
-={Name:'des',msg:[0,0]}//x,y
-
-// to_child
-var  ultra_value
-={Name:'ultra_value',msg:[1,1,1]}
-
 
 
 // *********** websocket with browser ************
