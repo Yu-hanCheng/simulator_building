@@ -50,20 +50,15 @@ int IPCServer(void)
 					sscanf(pch,"\"msg\":[%d,%d,%d]}",ultra_val,ultra_val+1,ultra_val+2);
 					printf("ultra_value=[%d,%d,%d]\n",ultra_val[0],ultra_val[1],ultra_val[2]);
 					int *p_motor_callback;
-					p_motor_callback= usercode();
-					for (int i = 0; i < 4; ++i)
+					char *send_motor_callback;
+					// p_motor_callback= usercode();
+					send_motor_callback= usercode();
+					for (int i = 0; i < 5; ++i)
 					{
-						printf( "motor_pin[%d]=%d\n", i, *(p_motor_callback + i));
+						printf( "motor_pin[%d]=%d\n", i, *(send_motor_callback + i));
 					}
 
-		      		// printf("ultra_value=[%d,%d,%d]\n",ultra_val[0],ultra_val[1],ultra_val[3]);
-		      		// int motor_c[4]= {1,1,2,2};//{Name:'motor_c',msg:{pin:[0,0,0,0],period:0}}
-		      		int motor_c[4];
-		      		sprintf(motor_c,"%d", 5);
-		      		sprintf(motor_c+1,"%d", 1);
-		      		sprintf(motor_c+2,"%d", 11);
-		      		sprintf(motor_c+3,"%d",12);
-		      		if (send(clifd, motor_c, sizeof(motor_c), 0) == -1) {
+		      		if (send(clifd, send_motor_callback,21, 0) == -1) {
 						perror("sendback error");
 						close(clifd);
 					}

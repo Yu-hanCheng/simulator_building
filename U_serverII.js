@@ -43,10 +43,11 @@ u_client.on('data', (chunk) => {
   console.log("recved from IPCServer"+chunk); 
   // console.log("recved from IPCServer"+chunk.toString()); 
   motor_c.msg.pin=chunk.toString();//pin_val[]
-  motor=MTOA.Motor_to_Angle(motor_c);
+  motor=MTOA.Motor_to_Angle(chunk);
 // direct=L_F, L_B,R_F, R_B,Forward,Backward,stop
 // {Name:'motor_dir',msg:{direct:'right',angle:90}}
 // to_browser
+console.log("after Motor_to_Angle"+motor); 
 
 });
 u_client.on('error', function(err) {
