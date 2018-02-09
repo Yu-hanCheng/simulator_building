@@ -7,9 +7,9 @@ var webSocketServer = require('websocket').server;
 var http = require('http');
 var clients=[0,0,0,0,0];
 var motor_c// from_child
-={Name:'motor_c',msg:{pin:[0,0,0,0],period:0}}// L_F, L_B,R_F, R_B, time
-var motor
-={Name:'motor_dir',msg:{direct:'right',angle:90}}
+={Name:'motor_c',msg:{pin:[0,0,0,0],period:0}};// L_F, L_B,R_F, R_B, time
+motor
+={Name:'motor_dir',msg:{direct:'right',angle:90}};
 // main
 function init(){
   setInterval(IPC,500);
@@ -47,7 +47,9 @@ u_client.on('data', (chunk) => {
 // direct=L_F, L_B,R_F, R_B,Forward,Backward,stop
 // {Name:'motor_dir',msg:{direct:'right',angle:90}}
 // to_browser
-console.log("after Motor_to_Angle"+motor); 
+// var motor_parse = JSON.parse(motor.utf8Data);
+
+console.log(motor); 
 
 });
 u_client.on('error', function(err) {

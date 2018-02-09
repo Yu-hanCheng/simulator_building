@@ -31,8 +31,11 @@ char* usercode(void)
 		sprintf(tmpbuf,"%d",time);
 		printf("tmpbuf: %s\n", tmpbuf);
 		// motor_pin[4]=tmpbuf;
-		printf("%s", strcat(motor_pin, tmpbuf));
-		
+		// printf("%s", strcat(motor_pin, tmpbuf));
+		int ttt=0;
+		while(ttt<999999999){
+			ttt+=1;
+		}
 	}
 
 	return motor_pin;

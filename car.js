@@ -15,7 +15,7 @@ window.WebSocket = window.WebSocket || window.MozWebSocket;
 
 function init(){
     drawObj(ctx);
-  setInterval(updateCtx,100);
+  setInterval(updateCtx,300);
 }
 
 function updateCtx() {
@@ -40,17 +40,30 @@ function turn(_dir,_ang) {
 
   ctx.clearRect(xpos-50, ypos-20, 130, 90);
   ctx.translate(xpos+50,ypos+20);
-  if(_dir=="L_F"){
+  if(_dir=="R_F"){
+    console.log("RF");
   for (var i =0; _ang > i;i+=2) {
     ctx.rotate(2);
     }
     ctx.rotate(2);
+  }else if (_dir=="L_B") {
+    console.log("LB");
+    for (var i =0; _ang > i;i+=2) {
+    ctx.rotate(1);
+    }
+    ctx.rotate(1);
+
   }
+
   
-  console.log("right: "+_ang);
+  // console.log("right: "+_ang);
   xpos=-50;
   ypos=-20;
   ctx.fillRect(xpos, ypos, 100, 40);
+
+  ctx.fillStyle = "red";
+  ctx.fillRect(xpos, ypos, 10, 40);
+  ctx.fillStyle = "orange";
 }
 function drawCar(ctx) {
 
@@ -73,8 +86,8 @@ function drawCar(ctx) {
       if(imgData.data[j]==255){
        // alert(i+" "+xpos+","+ypos+" "+j+" "+imgData.data);
         ultra_value.msg[0] =i;
-        console.log("obstacle: "+i);
-        turn("L_F",40);
+        // console.log("obstacle: "+i);
+        turn("R_F",40);
         break;
       }
     }
@@ -110,8 +123,8 @@ function drawCar(ctx) {
 function update(){
   // console.log("===========update==========");
 
-  var connection = new WebSocket('ws://192.168.0.101:1337');
-  // var connection = new WebSocket('ws://192.168.1.179:1337');
+  // var connection = new WebSocket('ws://192.168.0.101:1337');
+  var connection = new WebSocket('ws://192.168.1.179:1337');
   connection.onopen = function () {
 
     var json = JSON.stringify(ultra_value);
@@ -119,7 +132,7 @@ function update(){
   };
   connection.onmessage = function (evt){
     var msgfromserver = evt.data;
-    
+    console.log("car recv:"+msgfromserver);
     var parse_msg =JSON.parse(msgfromserver)
    if (parse_msg.Name==='motor_dir') {
        console.log("dir: "+parse_msg.msg.direct+"\n angle :"+parse_msg.msg.angle);
