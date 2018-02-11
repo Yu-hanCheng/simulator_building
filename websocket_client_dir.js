@@ -14,8 +14,8 @@ function websocket_client(type) {
   "use strict";
   window.WebSocket = window.WebSocket || window.MozWebSocket;
  
-  // var connection = new WebSocket('ws://192.168.1.179:1337');
-  var connection = new WebSocket('ws://192.168.0.101:1337');
+  // var connection = new WebSocket('ws://192.168.1.107:1337');
+  var connection = new WebSocket('ws://192.168.0.103:1337');
   // var connection = new WebSocket('ws://192.168.43.180:1337');
   // var connection = new WebSocket('ws://192.168.208.101:1337');
   connection.onopen = function () {
@@ -27,13 +27,10 @@ function websocket_client(type) {
       console.log("Now recv: " + Date.now());
       var obj = { Name:'code',msg:input_code}
       // console.log(obj.br_msg);
-
- 
     }
     var json = JSON.stringify(obj);
     console.log(json);
     connection.send(json);
-    
   };
 
   connection.onerror = function (error) {
@@ -47,7 +44,7 @@ function websocket_client(type) {
 
     try {
       // var json = JSON.parse(message.data);
-      // console.log('msg: ', message.data);//set done
+      console.log('msg: ', message.data);//set done
     } catch (e) {
       // console.log('Invalid JSON: ', message);
       return;

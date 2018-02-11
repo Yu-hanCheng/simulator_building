@@ -1,6 +1,8 @@
 #include "IPCServer.h"
+#include <string.h>
 #define QLEN 10
-int ultra_val[3];
+extern int ultra_val[3];
+int motor_c[4];
 int IPCServer(void)
 {
 	int    fd,clifd,size,len, err, rval,rc,come_in;
@@ -21,7 +23,7 @@ int IPCServer(void)
 
 		if (bind(fd, (struct sockaddr *)&un, size) < 0) {
 			perror("bind error");
-			// exit(1);
+			exit(1);
 		}else if (listen(fd, QLEN) < 0) { /* tell kernel we're a server */
 			printf("listen<0\n");
 			rval = -3;
@@ -34,19 +36,36 @@ int IPCServer(void)
 			printf("accept<0\n");
 			return(-1);     /* often errno=EINTR, if signal caught */
 		}else{
-			printf("%\n",clifd);
+			// printf("%s\n",clifd);
 			come_in=1;
 			printf("UNIX domain socket accepted\n");
 			// while (come_in){ 
 				if((rc=read(clifd,buff,sizeof(buff))) > 0) {
-		      		printf("read %u bytes: %.*s\n", rc, rc, buff);
-		      		write(clifd, buff, rc);
-		      		if (send(clifd, buff, strlen(buff)+1, 0) == -1) {
-						perror("sendback error");
+		      		printf("read %u bytes: %.*s\n", rc,rc, buff);
+		      		// {"Name":"ultra_value","msg":[1,1,1]}
+		      		char *delim = ",";
+					char * pch;
+					pch = strtok(buff,delim);
+					pch = strtok(NULL,"}");
+					sscanf(pch,"\"msg\":[%d,%d,%d]}",ultra_val,ultra_val+1,ultra_val+2);
+					printf("ultra_value=[%d,%d,%d]\n",ultra_val[0],ultra_val[1],ultra_val[2]);
+					int *p_motor_callback;
+					char *send_motor_callback;
+					// p_motor_callback= usercode();
+					send_motor_callback= usercode();
+					for (int i = 0; i < 5; ++i)
+					{
+						printf( "motor_pin[%d]=%d\n", i, *(send_motor_callback + i));
 					}
+
+		      		if (send(clifd, send_motor_callback,21, 0) == -1) {
+						perror("sendback error");
+						close(clifd);
+					}
+					
 		    	}else if (rc == 0) {
 			      printf("EOF\n");
-			      // goto errout;
+			      goto errout;
 	    		}//else{come_in=0;}
 	    		
 
@@ -56,7 +75,7 @@ int IPCServer(void)
 	      exit(-1);
 		}
 	}
-		close(clifd);
+		// close(clifd);
 errout:
 	close(clifd);
 	printf("errout\n");
