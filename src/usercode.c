@@ -4,7 +4,7 @@
 extern int ultra_val[3];
 char* usercode(void)
 {
-	static char  motor_pin[3];
+	static char  motor_pin[4];
 	strncpy(motor_pin, "", 3);
 	printf("in usercode");
 	
@@ -22,14 +22,16 @@ char* usercode(void)
 		motor_pin[1]='0';
 		motor_pin[2]='1';
 		motor_pin[3]='0';
-		int time =230;
+		int time =550;
 		char tmpbuf[4];
 		sprintf(tmpbuf,"%d",time);
-		printf("tmpbuf: %s\n", motor_pin);
-		int ttt=0;
-		while(ttt<99999999){
-			ttt+=1;
-		}
+		strcat(motor_pin,",");
+		strcat(motor_pin,tmpbuf);
+		printf("motor_pin: %s\n",motor_pin);
+	char *p;
+   		p = strtok(motor_pin, ",");	
+		*motor_pin=*p;
+
 	}
 
 	return motor_pin;

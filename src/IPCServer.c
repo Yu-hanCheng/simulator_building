@@ -51,9 +51,9 @@ int IPCServer(void)
 					printf("ultra_value=[%d,%d,%d]\n",ultra_val[0],ultra_val[1],ultra_val[2]);
 					int *p_motor_callback;
 					char *send_motor_callback;
-					// p_motor_callback= usercode();
+					// loop();//in m_motor
 					send_motor_callback= usercode();
-					for (int i = 0; i < 5; ++i)
+					for (int i = 0; i < 8; ++i)
 					{
 						printf( "motor_pin[%d]=%d\n", i, *(send_motor_callback + i));
 					}
