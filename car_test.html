@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script  src="file:///Users/sarahcheng/Documents/Master/GRA/Simulator/two.js">
+</script>
+</head>
+<body >
+<form>
+  <input type="text" name="set_angle"><button>set</button> 
+</form>
+<!-- <canvas id="myCanvas" width="500" height="300"  > -->
+  <div id="draw-animation"></div>
+<!-- </canvas> -->
+<p id="angle"></p>
+<script type="text/javascript">
+// var ctx = document.getElementById("myCanvas").getContext('2d');
+
+var elem = document.getElementById('draw-animation');
+var show_angle = document.getElementById('angle');
+var two = new Two({ width: 500, height: 400 }).appendTo(elem);
+two.makePath(0, 0, 10, 20, 15, 5, true);
+var circle = two.makeCircle(33, 7, 45);
+var rect = two.makeRectangle(0, 0, 80, 40);
+circle.fill = '#FF8000';
+rect.fill = 'rgba(0, 200, 255, 0.75)';
+// return;
+var group = two.makeGroup(circle, rect);
+group.translation.set(two.width / 2, two.height / 2);
+group.scale = 1;
+group.noStroke();
+var angle=0;
+
+var straight=1;
+var org_deg=125;
+var degree=org_deg/180;
+
+var direction=0;
+
+// Bind a function to scale and rotate the group
+// to the animation loop.
+two.bind('update', function(frameCount) {
+  // This code is called everytime two.update() is called.
+  // Effectively 60 times per second.
+ 	show_angle.innerHTML="angle";
+  
+  
+  if (angle < degree && direction) {
+    
+    angle+=0.005;
+    show_angle.innerHTML=angle;
+    group.rotation +=  0.005* Math.PI;
+  }else if (angle < degree && !direction) {
+    
+    angle+=0.005;
+    group.rotation -=  0.005* Math.PI;
+  }
+  else{
+  	// this.pause();
+  	show_angle.innerHTML="wewe";
+    if (straight) {
+    group.translation.x+=Math.cos(2*Math.PI/(360/org_deg));
+    group.translation.y-=Math.sin(2*Math.PI/(360/org_deg));
+  }
+  }
+  
+}).play();  // Finally, start the animation loop
+
+</script>
+</body>
+</html>
